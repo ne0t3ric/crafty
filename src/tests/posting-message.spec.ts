@@ -1,18 +1,28 @@
-type Message = {
-    messageId: string
-    userId: string
-    text: string
-    date: Date
-}
+import {PostMessageUseCase} from "../PostMessageUseCase";
+import {Message} from "../Message";
+import {PostMessageCommand} from "../PostMessageCommand";
 
 let now = new Date()
 let message: Message
+const saveMessageCallback = (msg: Message) => {
+    message = msg
+}
+
+const getDateCallback = () => {
+    return now
+}
+
+let postMessageUseCase = new PostMessageUseCase(
+    saveMessageCallback,
+    getDateCallback
+)
+
 function givenNowIs(date: Date) {
     now = date
 }
 
-function whenUserPostsMessage(postMessageCommand: Message) {
-    message = postMessageCommand
+function whenUserPostsMessage(postMessageCommand: PostMessageCommand) {
+    postMessageUseCase.handle(postMessageCommand)
 }
 
 function thenMessageShouldBePosted(expectedMessage: Message) {
@@ -27,7 +37,6 @@ describe('Feature: Posting a message', () => {
                 messageId: 'message-1',
                 userId: 'Alice',
                 text: 'Hello World',
-                date: now
             })
             thenMessageShouldBePosted({
                 messageId: 'message-1',
