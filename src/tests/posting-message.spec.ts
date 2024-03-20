@@ -1,69 +1,22 @@
 import {PostMessageUseCase} from "../PostMessageUseCase";
 import {Message} from "../Message";
 import {PostMessageCommand} from "../PostMessageCommand";
-import {MessageRepository} from "../MessageRepository";
-import {DateProvider} from "../DateProvider";
 import {MessageTooLongError} from "../MessageTooLongError";
 import {EmptyMessageError} from "../EmptyMessageError";
+import {LocalMessageRepository} from "../LocalMessageRepository";
+import {LocalDateProvider} from "../LocalDateProvider";
 
-let now = new Date()
-let message: Message
-let thrownError: Error
-
-class LocalRepository implements MessageRepository{
-    save(m: Message) {
-        message = m
-    }
-}
-
-class StubNowDateProvider implements DateProvider{
-    getDate(): Date {
-        return now
-    }
-}
-
-
-const messageRepository = new LocalRepository()
-const dateProvider = new StubNowDateProvider()
-
-let postMessageUseCase = new PostMessageUseCase(
-    messageRepository,
-    dateProvider
-)
-
-function givenNowIs(date: Date) {
-    now = date
-}
-
-function whenUserPostsMessage(postMessageCommand: PostMessageCommand) {
-    try {
-        postMessageUseCase.handle(postMessageCommand)
-    } catch(error) {
-        thrownError = error
-    }
-}
-
-function thenMessageShouldBePosted(expectedMessage: Message) {
-    expect(expectedMessage).toEqual(message)
-}
-
-function thenMessageTooLongErrorShouldBeThrown() {
-    expect(thrownError).toBeInstanceOf(MessageTooLongError)
-}
-
-function thenMessageEmptyShouldBeThrown() {
-    expect(thrownError).toBeInstanceOf(EmptyMessageError)
-}
+const fixture = createFixture()
 describe('Feature: Posting a message', () => {
     describe('Rule: a message can contains maximum 280 characters', () => {
         test('Alice can post a message on her timeline', () => {
-            givenNowIs(new Date('2024-03-20T10:00:00Z'))
-            whenUserPostsMessage({
+            fixture.givenNowIs(new Date('2024-03-20T10:00:00Z'))
+            fixture.whenUserPostsMessage({
                 messageId: 'message-1',
                 userId: 'Alice',
                 text: 'Hello World',
             })
-            thenMessageShouldBePosted({
+            fixture.thenMessageShouldBePosted({
                 messageId: 'message-1',
                 userId: 'Alice',
                 text: 'Hello World',
@@ -72,25 +25,55 @@ describe('Feature: Posting a message', () => {
         })
 
         test('Alice cannot post a message with more than 280 characters', () => {
-            givenNowIs(new Date('2024-03-20T10:00:00Z'))
-            whenUserPostsMessage({
+            fixture.givenNowIs(new Date('2024-03-20T10:00:00Z'))
+            fixture.whenUserPostsMessage({
                 messageId: 'message-1',
                 userId: 'Alice',
                 text: 'a'.repeat(281),
             })
-            thenMessageTooLongErrorShouldBeThrown()
+            fixture.thenErrorShouldBeThrown(MessageTooLongError)
         })
     })
 
     describe('Rule: an empty message is not allowed', () => {
         test('Alice cannot post an empty message', () => {
-            givenNowIs(new Date('2024-03-20T10:00:00Z'))
-            whenUserPostsMessage({
+            fixture.givenNowIs(new Date('2024-03-20T10:00:00Z'))
+            fixture.whenUserPostsMessage({
                 messageId: 'message-1',
                 userId: 'Alice',
                 text: '',
             })
-            thenMessageEmptyShouldBeThrown()
+            fixture.thenErrorShouldBeThrown(EmptyMessageError)
         })
     })
 })
+
+function createFixture() {
+    let thrownError: Error
+
+    const messageRepository = new LocalMessageRepository()
+    const dateProvider = new LocalDateProvider()
+    const postMessageUseCase = new PostMessageUseCase(
+        messageRepository,
+        dateProvider
+    )
+
+    return {
+        givenNowIs: (date: Date) => {
+            dateProvider.setDate(date)
+        },
+        whenUserPostsMessage: (postMessageCommand: PostMessageCommand) => {
+            try {
+                postMessageUseCase.handle(postMessageCommand)
+            } catch(error) {
+                thrownError = error
+            }
+        },
+        thenMessageShouldBePosted: (expectedMessage: Message) => {
+            expect(expectedMessage).toEqual(messageRepository.message)
+        },
+        thenErrorShouldBeThrown: (classError: new () => Error)=> {
+            expect(thrownError).toBeInstanceOf(classError)
+        }
+    }
+}
