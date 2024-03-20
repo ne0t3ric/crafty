@@ -4,6 +4,7 @@ import {PostMessageCommand} from "../PostMessageCommand";
 import {MessageRepository} from "../MessageRepository";
 import {DateProvider} from "../DateProvider";
 import {MessageTooLongError} from "../MessageTooLongError";
+import {EmptyMessageError} from "../EmptyMessageError";
 
 let now = new Date()
 let message: Message
@@ -49,6 +50,10 @@ function thenMessageShouldBePosted(expectedMessage: Message) {
 function thenMessageTooLongErrorShouldBeThrown() {
     expect(thrownError).toBeInstanceOf(MessageTooLongError)
 }
+
+function thenMessageEmptyShouldBeThrown() {
+    expect(thrownError).toBeInstanceOf(EmptyMessageError)
+}
 describe('Feature: Posting a message', () => {
     describe('Rule: a message can contains maximum 280 characters', () => {
         test('Alice can post a message on her timeline', () => {
@@ -74,6 +79,18 @@ describe('Feature: Posting a message', () => {
                 text: 'a'.repeat(281),
             })
             thenMessageTooLongErrorShouldBeThrown()
+        })
+    })
+
+    describe('Rule: an empty message is not allowed', () => {
+        test('Alice cannot post an empty message', () => {
+            givenNowIs(new Date('2024-03-20T10:00:00Z'))
+            whenUserPostsMessage({
+                messageId: 'message-1',
+                userId: 'Alice',
+                text: '',
+            })
+            thenMessageEmptyShouldBeThrown()
         })
     })
 })
