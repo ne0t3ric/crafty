@@ -4,17 +4,18 @@ import {PostMessageCommand} from "../PostMessageCommand";
 
 let now = new Date()
 let message: Message
-const saveMessageCallback = (msg: Message) => {
-    message = msg
+let messageRepository = {
+    save: (m: Message) => {
+        message = m
+    }
 }
-
-const getDateCallback = () => {
-    return now
+const dateProvider = {
+    getDate: () => now
 }
 
 let postMessageUseCase = new PostMessageUseCase(
-    saveMessageCallback,
-    getDateCallback
+    messageRepository,
+    dateProvider
 )
 
 function givenNowIs(date: Date) {
