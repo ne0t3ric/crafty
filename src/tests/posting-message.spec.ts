@@ -1,17 +1,26 @@
 import {PostMessageUseCase} from "../PostMessageUseCase";
 import {Message} from "../Message";
 import {PostMessageCommand} from "../PostMessageCommand";
+import {MessageRepository} from "../MessageRepository";
+import {DateProvider} from "../DateProvider";
 
 let now = new Date()
 let message: Message
-let messageRepository = {
-    save: (m: Message) => {
+
+class LocalRepository implements MessageRepository{
+    save(m: Message) {
         message = m
     }
 }
-const dateProvider = {
-    getDate: () => now
+
+class StubNowDateProvider implements DateProvider{
+    getDate(): Date {
+        return now
+    }
 }
+
+const messageRepository = new LocalRepository()
+const dateProvider = new StubNowDateProvider()
 
 let postMessageUseCase = new PostMessageUseCase(
     messageRepository,
@@ -31,7 +40,7 @@ function thenMessageShouldBePosted(expectedMessage: Message) {
 }
 
 describe('Feature: Posting a message', () => {
-    // describe('Rule: a message can contains maximum 280 characters', () => {
+    describe('Rule: a message can contains maximum 280 characters', () => {
         test('Alice can post a message on her timeline', () => {
             givenNowIs(new Date('2024-03-20T10:00:00Z'))
             whenUserPostsMessage({
@@ -46,5 +55,5 @@ describe('Feature: Posting a message', () => {
                 date: new Date('2024-03-20T10:00:00Z')
             })
         })
-    // })
+    })
 })
