@@ -9,9 +9,9 @@ import {LocalDateProvider} from "../LocalDateProvider";
 const fixture = createFixture()
 describe('Feature: Posting a message', () => {
     describe('Rule: a message can contains maximum 280 characters', () => {
-        test('Alice can post a message on her timeline', () => {
+        test('Alice can post a message on her timeline', async () => {
             fixture.givenNowIs(new Date('2024-03-20T10:00:00Z'))
-            fixture.whenUserPostsMessage({
+            await fixture.whenUserPostsMessage({
                 messageId: 'message-1',
                 userId: 'Alice',
                 text: 'Hello World',
@@ -24,9 +24,9 @@ describe('Feature: Posting a message', () => {
             })
         })
 
-        test('Alice cannot post a message with more than 280 characters', () => {
+        test('Alice cannot post a message with more than 280 characters', async () => {
             fixture.givenNowIs(new Date('2024-03-20T10:00:00Z'))
-            fixture.whenUserPostsMessage({
+            await fixture.whenUserPostsMessage({
                 messageId: 'message-1',
                 userId: 'Alice',
                 text: 'a'.repeat(281),
@@ -36,9 +36,9 @@ describe('Feature: Posting a message', () => {
     })
 
     describe('Rule: an empty message is not allowed', () => {
-        test('Alice cannot post an empty message', () => {
+        test('Alice cannot post an empty message', async () => {
             fixture.givenNowIs(new Date('2024-03-20T10:00:00Z'))
-            fixture.whenUserPostsMessage({
+            await fixture.whenUserPostsMessage({
                 messageId: 'message-1',
                 userId: 'Alice',
                 text: '',
@@ -62,9 +62,9 @@ function createFixture() {
         givenNowIs: (date: Date) => {
             dateProvider.setDate(date)
         },
-        whenUserPostsMessage: (postMessageCommand: PostMessageCommand) => {
+        whenUserPostsMessage: async (postMessageCommand: PostMessageCommand) => {
             try {
-                postMessageUseCase.handle(postMessageCommand)
+                await postMessageUseCase.handle(postMessageCommand)
             } catch(error) {
                 thrownError = error
             }

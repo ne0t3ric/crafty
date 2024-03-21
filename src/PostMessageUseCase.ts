@@ -10,7 +10,7 @@ export class PostMessageUseCase {
         private messageRepository: MessageRepository,
         private dateProvider: DateProvider
     ) {}
-    handle(postMessageCommand: PostMessageCommand) {
+    async handle(postMessageCommand: PostMessageCommand) {
         if (postMessageCommand.text.length > 280) {
             throw new MessageTooLongError()
         }
@@ -25,6 +25,10 @@ export class PostMessageUseCase {
             date: this.dateProvider.getDate()
         }
 
-        this.messageRepository.save(message)
+        try {
+            await this.messageRepository.save(message)
+        } catch(error) {
+            console.error(error)
+        }
     }
 }
