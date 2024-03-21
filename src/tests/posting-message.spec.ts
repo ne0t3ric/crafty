@@ -16,7 +16,7 @@ describe('Feature: Posting a message', () => {
                 userId: 'Alice',
                 text: 'Hello World',
             })
-            await fixture.thenMessageShouldBePosted({
+            await fixture.thenMessageShouldBe({
                 messageId: 'message-1',
                 userId: 'Alice',
                 text: 'Hello World',

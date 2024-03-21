@@ -11,6 +11,23 @@ export class FileSystemMessageRepository implements MessageRepository {
         }
     }
 
+    async update(message: Pick<Message, "messageId"> & Partial<Message>): Promise<void> {
+        const messageId = message.messageId
+        const messages = this.readMessages()
+        const existingMessage = await this.get(messageId)
+        if (!existingMessage) {
+            throw new Error('Message not found')
+        }
+
+        const index = messages.findIndex((msg: Message) => msg.messageId === messageId)
+        messages[index] = {
+            ...existingMessage,
+            ...message
+        }
+
+        this.writeMessages(messages)
+    }
+
     private fileExists(): boolean {
         return fs.existsSync(this.path)
     }

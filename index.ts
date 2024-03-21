@@ -6,6 +6,8 @@ import {PostMessageUseCase} from "./src/PostMessageUseCase";
 import {LocalDateProvider} from "./src/LocalDateProvider";
 import {FileSystemMessageRepository} from "./src/FileSystemMessageRepository";
 import {ViewTimelineUseCase} from "./src/ViewTimelineUseCase";
+import {EditMessageUserCase} from "./src/EditMessageUserCase";
+import {UserProvider} from "./src/UserProvider";
 
 function generateId(): string {
     return Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
@@ -57,6 +59,38 @@ program.addCommand(
             console.table(timeline)
         })
 )
+
+program.addCommand(
+    new Command('edit')
+        .description('Edit message as specific user')
+        .argument('<messageId>', 'message to edit')
+        .argument('<userId>', 'user that edits the message')
+        .argument('<text>', 'new text')
+        .action(async (messageId, userId, text) => {
+            const messageRepository = new FileSystemMessageRepository()
+            const dateProvider = new LocalDateProvider()
+            const userProvider: UserProvider = {
+                getUser: () => {
+                    return {id: userId }
+                },
+                setUser: () => {}
+            }
+
+            const editMessageUserCase = new EditMessageUserCase(
+                messageRepository,
+                dateProvider,
+                userProvider
+            )
+            const inputMessage = {
+                messageId,
+                text,
+            }
+            await editMessageUserCase.handle(inputMessage)
+            const message = await messageRepository.get(inputMessage.messageId)
+            console.table(message)
+        })
+)
+
 
 async function main() {
     await program.parseAsync(process.argv);
