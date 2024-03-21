@@ -5,6 +5,7 @@ import {PostMessageCommand} from "./src/PostMessageCommand";
 import {PostMessageUseCase} from "./src/PostMessageUseCase";
 import {LocalDateProvider} from "./src/LocalDateProvider";
 import {FileSystemMessageRepository} from "./src/FileSystemMessageRepository";
+import {ViewTimelineUseCase} from "./src/ViewTimelineUseCase";
 
 function generateId(): string {
     return Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
@@ -45,8 +46,15 @@ program.addCommand(
         .argument('<user>', 'user to view messages of')
         .action(async (user) => {
             const messageRepository = new FileSystemMessageRepository()
-            const messages = await messageRepository.getByUser(user)
-            console.table(messages)
+            const dateProvider = new LocalDateProvider()
+
+            const viewTimelineUseCase = new ViewTimelineUseCase(
+                messageRepository,
+                dateProvider
+            )
+
+            const timeline = await viewTimelineUseCase.handle(user)
+            console.table(timeline)
         })
 )
 
