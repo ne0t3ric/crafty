@@ -2,9 +2,8 @@ import {EditMessageCommand} from "./EditMessageCommand";
 import {DateProvider} from "./DateProvider";
 import {MessageRepository} from "./MessageRepository";
 import {UserProvider} from "./UserProvider";
-import {MessageTooLongError} from "./MessageTooLongError";
-import {EmptyMessageError} from "./EmptyMessageError";
 import {AuthorizationError} from "./AuthorizationError";
+import {MessageText} from "./MessageText";
 
 export class EditMessageUserCase {
     constructor(
@@ -19,17 +18,11 @@ export class EditMessageUserCase {
             throw new AuthorizationError('You are not allowed to edit this message')
         }
 
-        if (editMessageCommand.text.length > 280) {
-            throw new MessageTooLongError()
-        }
-
-        if (editMessageCommand.text.length === 0) {
-            throw new EmptyMessageError()
-        }
+        const messageText = MessageText.of(editMessageCommand.text)
 
         const message = {
             messageId: editMessageCommand.messageId,
-            text: editMessageCommand.text,
+            text: messageText,
             date: this.dateProvider.getDate()
         }
 

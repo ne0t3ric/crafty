@@ -2,6 +2,7 @@ import {createMessageFixture, MessageFixture} from "./message.fixture";
 import {MessageTooLongError} from "../MessageTooLongError";
 import {EmptyMessageError} from "../EmptyMessageError";
 import {AuthorizationError} from "../AuthorizationError";
+import {MessageText} from "../MessageText";
 
 let fixture: MessageFixture
 beforeEach(() => {
@@ -13,7 +14,7 @@ describe('Feature: Editing a message', () => {
             await fixture.givenMessages([{
                 messageId: 'message-1',
                 userId: 'Alice',
-                text: 'Hello World',
+                text: MessageText.of('Hello World'),
                 date: new Date('2024-03-20T10:00:00Z')
             }])
             fixture.givenUserIs({id: 'Alice'})
@@ -26,7 +27,7 @@ describe('Feature: Editing a message', () => {
             await fixture.thenMessageShouldBe({
                 messageId: 'message-1',
                 userId: 'Alice',
-                text: 'Hello World, I am Alive',
+                text: MessageText.of('Hello World, I am Alive'),
                 date: new Date('2024-03-20T10:00:00Z')
             })
         })
@@ -35,7 +36,7 @@ describe('Feature: Editing a message', () => {
             await fixture.givenMessages([{
                 messageId: 'message-1',
                 userId: 'Alice',
-                text: 'Hello World',
+                text: MessageText.of('Hello World'),
                 date: new Date('2024-03-20T10:00:00Z')
             }])
             fixture.givenUserIs({id: 'Alice'})
@@ -49,7 +50,7 @@ describe('Feature: Editing a message', () => {
             await fixture.thenMessageShouldBe({
                 messageId: 'message-1',
                 userId: 'Alice',
-                text: 'Hello World',
+                text: MessageText.of('Hello World'),
                 date: new Date('2024-03-20T10:00:00Z')
             })
         })
@@ -58,7 +59,7 @@ describe('Feature: Editing a message', () => {
             await fixture.givenMessages([{
                 messageId: 'message-1',
                 userId: 'Alice',
-                text: 'Hello World',
+                text: MessageText.of('Hello World'),
                 date: new Date('2024-03-20T10:00:00Z')
             }])
             fixture.givenUserIs({id: 'Alice'})
@@ -72,7 +73,7 @@ describe('Feature: Editing a message', () => {
             await fixture.thenMessageShouldBe({
                 messageId: 'message-1',
                 userId: 'Alice',
-                text: 'Hello World',
+                text: MessageText.of('Hello World'),
                 date: new Date('2024-03-20T10:00:00Z')
             })
         })
@@ -81,7 +82,7 @@ describe('Feature: Editing a message', () => {
             await fixture.givenMessages([{
                 messageId: 'message-1',
                 userId: 'Bob',
-                text: 'Hello World',
+                text: MessageText.of('Hello World'),
                 date: new Date('2024-03-20T10:00:00Z')
             }])
             fixture.givenUserIs({id: 'Alice'})
@@ -95,7 +96,7 @@ describe('Feature: Editing a message', () => {
             await fixture.thenMessageShouldBe({
                 messageId: 'message-1',
                 userId: 'Bob',
-                text: 'Hello World',
+                text: MessageText.of('Hello World'),
                 date: new Date('2024-03-20T10:00:00Z')
             })
         })

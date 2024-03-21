@@ -2,8 +2,7 @@ import {Message} from "./Message";
 import {PostMessageCommand} from "./PostMessageCommand";
 import {MessageRepository} from "./MessageRepository";
 import {DateProvider} from "./DateProvider";
-import {MessageTooLongError} from "./MessageTooLongError";
-import {EmptyMessageError} from "./EmptyMessageError";
+import {MessageText} from "./MessageText";
 
 export class PostMessageUseCase {
     constructor(
@@ -11,17 +10,12 @@ export class PostMessageUseCase {
         private dateProvider: DateProvider
     ) {}
     async handle(postMessageCommand: PostMessageCommand) {
-        if (postMessageCommand.text.length > 280) {
-            throw new MessageTooLongError()
-        }
+        const messageText = MessageText.of(postMessageCommand.text)
 
-        if (postMessageCommand.text.length === 0) {
-            throw new EmptyMessageError()
-        }
         const message: Message = {
             messageId: postMessageCommand.messageId,
             userId: postMessageCommand.userId,
-            text: postMessageCommand.text,
+            text: messageText,
             date: this.dateProvider.getDate()
         }
 

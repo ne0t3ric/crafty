@@ -25,7 +25,7 @@ export class ViewTimelineUseCase {
             }
             return {
                 userId: message.userId,
-                text: message.text,
+                text: message.text.value,
                 publicationTime
             }
         })

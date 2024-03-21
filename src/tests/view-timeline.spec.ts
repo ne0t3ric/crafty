@@ -1,4 +1,5 @@
 import {createMessageFixture, MessageFixture} from "./message.fixture";
+import {MessageText} from "../MessageText";
 
 let fixture: MessageFixture
 
@@ -14,21 +15,21 @@ describe('Feature: Viewing a personal timeline', () => {
                 // from Alive
                     messageId: 'message-1',
                     userId: 'Alice',
-                    text: 'Hello World',
+                    text: MessageText.of('Hello World'),
                     date: new Date('2024-03-20T10:00:00Z')
                 },
                 // from Bob
                 {
                     messageId: 'message-2',
                     userId: 'Bob',
-                    text: 'I am bob',
+                    text: MessageText.of('I am bob'),
                     date: new Date('2024-03-20T10:01:00Z')
                 },
                 // from Alive
                 {
                     messageId: 'message-3',
                     userId: 'Alice',
-                    text: 'Wassup',
+                    text: MessageText.of('Wassup'),
                     date: new Date('2024-03-20T12:00:00Z')
                 }
             ])

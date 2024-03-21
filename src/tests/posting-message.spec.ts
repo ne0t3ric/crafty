@@ -1,6 +1,7 @@
 import {createMessageFixture, MessageFixture} from "./message.fixture";
 import {MessageTooLongError} from "../MessageTooLongError";
 import {EmptyMessageError} from "../EmptyMessageError";
+import {MessageText} from "../MessageText";
 
 let fixture: MessageFixture
 
@@ -19,7 +20,7 @@ describe('Feature: Posting a message', () => {
             await fixture.thenMessageShouldBe({
                 messageId: 'message-1',
                 userId: 'Alice',
-                text: 'Hello World',
+                text: MessageText.of('Hello World'),
                 date: new Date('2024-03-20T10:00:00Z')
             })
         })
