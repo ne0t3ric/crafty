@@ -6,7 +6,11 @@ import {EmptyMessageError} from "../EmptyMessageError";
 import {LocalMessageRepository} from "../LocalMessageRepository";
 import {LocalDateProvider} from "../LocalDateProvider";
 
-const fixture = createFixture()
+let fixture: ReturnType<typeof createFixture>
+
+beforeEach(() => {
+    fixture = createFixture()
+})
 describe('Feature: Posting a message', () => {
     describe('Rule: a message can contains maximum 280 characters', () => {
         test('Alice can post a message on her timeline', async () => {
