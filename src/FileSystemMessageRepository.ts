@@ -6,27 +6,43 @@ export class FileSystemMessageRepository implements MessageRepository {
     path = 'tmp/messages.json'
 
     constructor(){
-        if (!fs.existsSync(this.path)){
-            fs.writeFileSync(this.path, '[]')
+        if (!this.fileExists()){
+            this.writeMessages([])
         }
     }
 
+    private fileExists(): boolean {
+        return fs.existsSync(this.path)
+    }
+
+    async getByUser(userId: string): Promise<Message[]> {
+        const messages = this.readMessages()
+        return messages.filter((msg: Message) => msg.userId === userId)
+    }
+
     async save(msg: Message): Promise<void> {
-        const messagesString = fs.readFileSync(this.path, 'utf-8')
-        const messages = JSON.parse(messagesString)
+        const messages = this.readMessages()
         messages.push(msg)
 
-        // save message to file system
-        fs.writeFileSync(this.path, JSON.stringify(messages))
+        this.writeMessages(messages)
     }
 
     async get(messageId: string): Promise<Message> {
-        const messagesString = fs.readFileSync(this.path, 'utf-8')
-        const messages = JSON.parse(messagesString)
+        const messages = this.readMessages()
         const foundMessage = messages.find((msg: Message) => msg.messageId === messageId)
         if (!foundMessage) {
             throw new Error('Message not found')
         }
         return foundMessage
+    }
+
+    private readMessages(): Message[] {
+        const stringifiedJson = fs.readFileSync(this.path, 'utf-8')
+
+        return stringifiedJson ? JSON.parse(stringifiedJson) : []
+    }
+
+    private writeMessages(messages: Message[]): void {
+        fs.writeFileSync(this.path, JSON.stringify(messages))
     }
 }
