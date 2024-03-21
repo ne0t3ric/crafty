@@ -3,6 +3,8 @@ import {LocalMessageRepository} from "../LocalMessageRepository";
 import {MessageRepository} from "../MessageRepository";
 import {ViewTimelineUseCase} from "../ViewTimelineUseCase";
 import {Timeline} from "../Timeline";
+import {DateProvider} from "../DateProvider";
+import {LocalDateProvider} from "../LocalDateProvider";
 
 let fixture: Fixture
 
@@ -33,7 +35,7 @@ describe('Feature: Viewing a personal timeline', () => {
                     messageId: 'message-3',
                     userId: 'Alice',
                     text: 'Wassup',
-                    date: new Date('2024-03-20T10:02:00Z')
+                    date: new Date('2024-03-20T12:00:00Z')
                 }
             ])
 
@@ -43,12 +45,12 @@ describe('Feature: Viewing a personal timeline', () => {
                 {
                     userId: 'Alice',
                     text: 'Wassup',
-                    date: new Date('2024-03-20T10:02:00Z')
+                    publicationTime: 'less than a minute ago'
                 },
                 {
                     userId: 'Alice',
                     text: 'Hello World',
-                    date: new Date('2024-03-20T10:00:00Z')
+                    publicationTime: 'hours ago'
                 }
             ])
         })
@@ -57,8 +59,10 @@ describe('Feature: Viewing a personal timeline', () => {
 
 function createFixture(){
     const messageRepository: MessageRepository = new LocalMessageRepository()
+    const dateProvider: DateProvider = new LocalDateProvider()
     const viewTimelineUseCase = new ViewTimelineUseCase(
-        messageRepository
+        messageRepository,
+        dateProvider
     )
     let timeline: Timeline
     return {
