@@ -20,7 +20,7 @@ describe('Feature: Posting a message', () => {
                 userId: 'Alice',
                 text: 'Hello World',
             })
-            fixture.thenMessageShouldBePosted({
+            await fixture.thenMessageShouldBePosted({
                 messageId: 'message-1',
                 userId: 'Alice',
                 text: 'Hello World',
@@ -73,8 +73,8 @@ function createFixture() {
                 thrownError = error
             }
         },
-        thenMessageShouldBePosted: (expectedMessage: Message) => {
-            expect(expectedMessage).toEqual(messageRepository.message)
+        thenMessageShouldBePosted: async  (expectedMessage: Message) => {
+            expect(expectedMessage).toEqual(await messageRepository.get(expectedMessage.messageId))
         },
         thenErrorShouldBeThrown: (classError: new () => Error)=> {
             expect(thrownError).toBeInstanceOf(classError)
