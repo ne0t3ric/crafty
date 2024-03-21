@@ -2,12 +2,20 @@ import {MessageRepository} from "./MessageRepository";
 import {Message} from "./Message";
 
 export class LocalMessageRepository implements MessageRepository {
-    public message: Message
+    public messages: Message[] = []
     async save(msg: Message): Promise<void> {
-        this.message = msg
+        this.messages.push(msg)
     }
 
     async get(messageId: string): Promise<Message> {
-        return this.message
+        const found = this.messages.find((msg: Message) => msg.messageId === messageId)
+        if (!found) {
+            throw new Error('Message not found')
+        }
+        return found
+    }
+
+    async getByUser(userId: string): Promise<Message[]> {
+       return this.messages.filter((msg: Message) => msg.userId === userId)
     }
 }
