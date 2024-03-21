@@ -1,15 +1,11 @@
-import {PostMessageUseCase} from "../PostMessageUseCase";
-import {Message} from "../Message";
-import {PostMessageCommand} from "../PostMessageCommand";
+import {createMessageFixture, MessageFixture} from "./message.fixture";
 import {MessageTooLongError} from "../MessageTooLongError";
 import {EmptyMessageError} from "../EmptyMessageError";
-import {LocalMessageRepository} from "../LocalMessageRepository";
-import {LocalDateProvider} from "../LocalDateProvider";
 
-let fixture: ReturnType<typeof createFixture>
+let fixture: MessageFixture
 
 beforeEach(() => {
-    fixture = createFixture()
+    fixture = createMessageFixture()
 })
 describe('Feature: Posting a message', () => {
     describe('Rule: a message can contains maximum 280 characters', () => {
@@ -51,33 +47,3 @@ describe('Feature: Posting a message', () => {
         })
     })
 })
-
-function createFixture() {
-    let thrownError: Error
-
-    const messageRepository = new LocalMessageRepository()
-    const dateProvider = new LocalDateProvider()
-    const postMessageUseCase = new PostMessageUseCase(
-        messageRepository,
-        dateProvider
-    )
-
-    return {
-        givenNowIs: (date: Date) => {
-            dateProvider.setDate(date)
-        },
-        whenUserPostsMessage: async (postMessageCommand: PostMessageCommand) => {
-            try {
-                await postMessageUseCase.handle(postMessageCommand)
-            } catch(error) {
-                thrownError = error
-            }
-        },
-        thenMessageShouldBePosted: async  (expectedMessage: Message) => {
-            expect(expectedMessage).toEqual(await messageRepository.get(expectedMessage.messageId))
-        },
-        thenErrorShouldBeThrown: (classError: new () => Error)=> {
-            expect(thrownError).toBeInstanceOf(classError)
-        }
-    }
-}
