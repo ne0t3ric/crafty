@@ -1,7 +1,7 @@
 import {createMessageFixture, MessageFixture} from "./message.fixture";
 import {MessageTooLongError} from "../domain/MessageTooLongError";
 import {EmptyMessageError} from "../domain/EmptyMessageError";
-import {MessageText} from "../domain/MessageText";
+import {Message} from "../domain/Message";
 
 let fixture: MessageFixture
 
@@ -17,12 +17,12 @@ describe('Feature: Posting a message', () => {
                 messageId: 'message-1',
                 text: 'Hello World',
             })
-            await fixture.thenMessageShouldBe({
+            await fixture.thenMessageShouldBe(Message.from({
                 messageId: 'message-1',
                 userId: 'Alice',
-                text: MessageText.of('Hello World'),
-                date: new Date('2024-03-20T10:00:00Z')
-            })
+                text: 'Hello World',
+                date: '2024-03-20T10:00:00Z'
+            }))
         })
 
         test('Alice cannot post a message with more than 280 characters', async () => {

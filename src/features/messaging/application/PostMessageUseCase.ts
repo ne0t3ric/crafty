@@ -2,7 +2,6 @@ import {Message} from "../domain/Message";
 import {PostMessageCommand} from "./PostMessageCommand";
 import {MessageRepository} from "../domain/MessageRepository";
 import {DateProvider} from "../domain/DateProvider";
-import {MessageText} from "../domain/MessageText";
 import {UserProvider} from "../../user/domain/UserProvider";
 
 export class PostMessageUseCase {
@@ -12,14 +11,12 @@ export class PostMessageUseCase {
         private userProvider: UserProvider
     ) {}
     async handle(postMessageCommand: PostMessageCommand) {
-        const messageText = MessageText.of(postMessageCommand.text)
-
-        const message: Message = {
+        const message = Message.from({
             messageId: postMessageCommand.messageId,
             userId: this.userProvider.getUser().id,
-            text: messageText,
-            date: this.dateProvider.getDate()
-        }
+            text: postMessageCommand.text,
+            date: this.dateProvider.getDate().toString()
+        })
 
         try {
             await this.messageRepository.save(message)

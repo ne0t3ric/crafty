@@ -3,7 +3,7 @@ import {DateProvider} from "../domain/DateProvider";
 import {MessageRepository} from "../domain/MessageRepository";
 import {UserProvider} from "../../user/domain/UserProvider";
 import {AuthorizationError} from "../../user/domain/AuthorizationError";
-import {MessageText} from "../domain/MessageText";
+import {Message} from "../domain/Message";
 
 export class EditMessageUserCase {
     constructor(
@@ -18,13 +18,13 @@ export class EditMessageUserCase {
             throw new AuthorizationError('You are not allowed to edit this message')
         }
 
-        const messageText = MessageText.of(editMessageCommand.text)
 
-        const message = {
+        const message = Message.from({
             messageId: editMessageCommand.messageId,
-            text: messageText,
-            date: this.dateProvider.getDate()
-        }
+            userId: this.userProvider.getUser().id,
+            text: editMessageCommand.text,
+            date: this.dateProvider.getDate().toString()
+        })
 
         await this.messageRepository.update(message)
     }

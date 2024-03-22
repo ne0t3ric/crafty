@@ -33,10 +33,9 @@ export class FileSystemMessageRepository implements MessageRepository {
         }
 
         const index = messages.findIndex((msg: Message) => msg.messageId === messageId)
-        messages[index] = {
-            ...existingMessage,
-            ...message
-        }
+
+        const messageInRepo = messages[index]
+        messageInRepo.text = message.text
 
         this.writeMessages(messages)
     }
@@ -84,7 +83,7 @@ export class FileSystemMessageRepository implements MessageRepository {
             return {
                 messageId: m.messageId,
                 userId: m.userId,
-                text: m.text.value,
+                text: m.text,
                 date: m.date.toString()
             }
         })))

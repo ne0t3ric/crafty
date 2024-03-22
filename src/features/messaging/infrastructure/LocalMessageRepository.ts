@@ -17,10 +17,8 @@ export class LocalMessageRepository implements MessageRepository {
         const existingMessage = await this.get(newMessage.messageId)
 
         const index = this.messages.indexOf(existingMessage)
-        this.messages[index] = {
-            ...existingMessage,
-            ...newMessage
-        }
+        const messageInRepo = this.messages[index]
+        messageInRepo.text = newMessage.text
     }
 
     async get(messageId: string): Promise<Message> {

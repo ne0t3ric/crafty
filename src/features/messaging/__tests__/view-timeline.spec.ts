@@ -1,5 +1,5 @@
 import {createMessageFixture, MessageFixture} from "./message.fixture";
-import {MessageText} from "../domain/MessageText";
+import {Message} from "../domain/Message";
 
 let fixture: MessageFixture
 
@@ -11,27 +11,27 @@ describe('Feature: Viewing a personal timeline', () => {
     describe('Rule: Messages of a user are shown in reverse order by date', () => {
         test('Alice can view her two messaging on her timeline', async () => {
             await fixture.givenMessages([
-                {
+                Message.from({
                 // from Alice
                     messageId: 'message-1',
                     userId: 'Alice',
-                    text: MessageText.of('Hello World'),
-                    date: new Date('2024-03-20T10:00:00Z')
-                },
+                    text:'Hello World',
+                    date: '2024-03-20T10:00:00Z'
+                }),
                 // from Bob
-                {
+                Message.from({
                     messageId: 'message-2',
                     userId: 'Bob',
-                    text: MessageText.of('I am bob'),
-                    date: new Date('2024-03-20T10:01:00Z')
-                },
+                    text: 'I am bob',
+                    date: '2024-03-20T10:01:00Z'
+                }),
                 // from Alive
-                {
+                Message.from({
                     messageId: 'message-3',
                     userId: 'Alice',
-                    text: MessageText.of('Wassup'),
-                    date: new Date('2024-03-20T12:00:00Z')
-                }
+                    text: 'Wassup',
+                    date: '2024-03-20T12:00:00Z'
+                })
             ])
             fixture.givenNowIs(new Date('2024-03-20T12:00:00Z'))
             await fixture.whenUserSeeTheTimelineOf('Alice')
