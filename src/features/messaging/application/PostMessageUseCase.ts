@@ -1,20 +1,22 @@
-import {Message} from "./Message";
+import {Message} from "../domain/Message";
 import {PostMessageCommand} from "./PostMessageCommand";
-import {MessageRepository} from "./MessageRepository";
-import {DateProvider} from "./DateProvider";
-import {MessageText} from "./MessageText";
+import {MessageRepository} from "../domain/MessageRepository";
+import {DateProvider} from "../domain/DateProvider";
+import {MessageText} from "../domain/MessageText";
+import {UserProvider} from "../../user/domain/UserProvider";
 
 export class PostMessageUseCase {
     constructor(
         private messageRepository: MessageRepository,
-        private dateProvider: DateProvider
+        private dateProvider: DateProvider,
+        private userProvider: UserProvider
     ) {}
     async handle(postMessageCommand: PostMessageCommand) {
         const messageText = MessageText.of(postMessageCommand.text)
 
         const message: Message = {
             messageId: postMessageCommand.messageId,
-            userId: postMessageCommand.userId,
+            userId: this.userProvider.getUser().id,
             text: messageText,
             date: this.dateProvider.getDate()
         }

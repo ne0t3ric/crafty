@@ -1,6 +1,6 @@
-import {MessageRepository} from "./MessageRepository";
-import {Timeline} from "./Timeline";
-import {DateProvider} from "./DateProvider";
+import {MessageRepository} from "../domain/MessageRepository";
+import {Timeline} from "../domain/Timeline";
+import {DateProvider} from "../domain/DateProvider";
 
 export const ONE_MINUTE_IN_MS = 60000
 export class ViewTimelineUseCase {

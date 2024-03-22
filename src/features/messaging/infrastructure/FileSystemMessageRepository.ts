@@ -1,9 +1,9 @@
-import {MessageRepository} from "./MessageRepository";
-import {Message} from "./Message";
+import {MessageRepository} from "../domain/MessageRepository";
+import {Message} from "../domain/Message";
 import * as fs from "fs";
 
 export class FileSystemMessageRepository implements MessageRepository {
-    path = 'tmp/messages.json'
+    path = 'tmp/messaging.json'
 
     constructor(){
         if (!this.fileExists()){

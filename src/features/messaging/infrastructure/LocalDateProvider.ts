@@ -1,4 +1,4 @@
-import {DateProvider} from "./DateProvider";
+import {DateProvider} from "../domain/DateProvider";
 
 export class LocalDateProvider implements DateProvider {
     private date: Date = new Date()

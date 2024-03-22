@@ -1,8 +1,8 @@
 import {createMessageFixture, MessageFixture} from "./message.fixture";
-import {MessageTooLongError} from "../MessageTooLongError";
-import {EmptyMessageError} from "../EmptyMessageError";
-import {AuthorizationError} from "../AuthorizationError";
-import {MessageText} from "../MessageText";
+import {MessageTooLongError} from "../domain/MessageTooLongError";
+import {EmptyMessageError} from "../domain/EmptyMessageError";
+import {AuthorizationError} from "../../user/domain/AuthorizationError";
+import {MessageText} from "../domain/MessageText";
 
 let fixture: MessageFixture
 beforeEach(() => {
@@ -17,7 +17,7 @@ describe('Feature: Editing a message', () => {
                 text: MessageText.of('Hello World'),
                 date: new Date('2024-03-20T10:00:00Z')
             }])
-            fixture.givenUserIs({id: 'Alice'})
+            fixture.givenUserIs('Alice')
             fixture.givenNowIs(new Date('2024-03-20T10:00:00Z'))
 
             await fixture.whenUserEditMessage({
@@ -39,7 +39,7 @@ describe('Feature: Editing a message', () => {
                 text: MessageText.of('Hello World'),
                 date: new Date('2024-03-20T10:00:00Z')
             }])
-            fixture.givenUserIs({id: 'Alice'})
+            fixture.givenUserIs('Alice')
             fixture.givenNowIs(new Date('2024-03-20T10:00:00Z'))
 
             await fixture.whenUserEditMessage({
@@ -62,7 +62,7 @@ describe('Feature: Editing a message', () => {
                 text: MessageText.of('Hello World'),
                 date: new Date('2024-03-20T10:00:00Z')
             }])
-            fixture.givenUserIs({id: 'Alice'})
+            fixture.givenUserIs('Alice')
             fixture.givenNowIs(new Date('2024-03-20T10:00:00Z'))
 
             await fixture.whenUserEditMessage({
@@ -85,7 +85,7 @@ describe('Feature: Editing a message', () => {
                 text: MessageText.of('Hello World'),
                 date: new Date('2024-03-20T10:00:00Z')
             }])
-            fixture.givenUserIs({id: 'Alice'})
+            fixture.givenUserIs('Alice')
             fixture.givenNowIs(new Date('2024-03-20T12:00:00Z'))
 
             await fixture.whenUserEditMessage({

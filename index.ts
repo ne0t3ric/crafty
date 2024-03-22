@@ -1,13 +1,14 @@
 #!/usr/bin/env node
 
 import { Command } from 'commander';
-import {PostMessageCommand} from "./src/PostMessageCommand";
-import {PostMessageUseCase} from "./src/PostMessageUseCase";
-import {LocalDateProvider} from "./src/LocalDateProvider";
-import {FileSystemMessageRepository} from "./src/FileSystemMessageRepository";
-import {ViewTimelineUseCase} from "./src/ViewTimelineUseCase";
-import {EditMessageUserCase} from "./src/EditMessageUserCase";
-import {UserProvider} from "./src/UserProvider";
+import {PostMessageCommand} from "./src/features/messaging/application/PostMessageCommand";
+import {PostMessageUseCase} from "./src/features/messaging/application/PostMessageUseCase";
+import {LocalDateProvider} from "./src/features/messaging/infrastructure/LocalDateProvider";
+import {FileSystemMessageRepository} from "./src/features/messaging/infrastructure/FileSystemMessageRepository";
+import {ViewTimelineUseCase} from "./src/features/messaging/application/ViewTimelineUseCase";
+import {EditMessageUserCase} from "./src/features/messaging/application/EditMessageUserCase";
+import {UserProvider} from "./src/features/user/domain/UserProvider";
+import {StaticUserProvider} from "./src/features/user/infrastructure/StaticUserProvider";
 
 function generateId(): string {
     return Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
@@ -25,12 +26,17 @@ program.addCommand(
             const messageId = generateId()
             const postMessageCommand: PostMessageCommand = {
                 messageId,
-                userId: user,
                 text: message,
             }
             const messageRepository = new FileSystemMessageRepository()
             const dateProvider = new LocalDateProvider()
-            const postMessageUseCase = new PostMessageUseCase(messageRepository, dateProvider)
+            const userProvider: UserProvider = new StaticUserProvider()
+            userProvider.setUser({id: user})
+            const postMessageUseCase = new PostMessageUseCase(
+                messageRepository,
+                dateProvider,
+                userProvider
+            )
 
             try {
                 await postMessageUseCase.handle(postMessageCommand)
@@ -44,8 +50,8 @@ program.addCommand(
 
 program.addCommand(
     new Command('view')
-        .description('View messages of a user')
-        .argument('<user>', 'user to view messages of')
+        .description('View messaging of a user')
+        .argument('<user>', 'user to view messaging of')
         .action(async (user) => {
             const messageRepository = new FileSystemMessageRepository()
             const dateProvider = new LocalDateProvider()

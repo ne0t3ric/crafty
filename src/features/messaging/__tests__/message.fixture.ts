@@ -1,28 +1,20 @@
-import {LocalMessageRepository} from "../LocalMessageRepository";
-import {LocalDateProvider} from "../LocalDateProvider";
-import {PostMessageUseCase} from "../PostMessageUseCase";
-import {PostMessageCommand} from "../PostMessageCommand";
-import {Message} from "../Message";
-import {ViewTimelineUseCase} from "../ViewTimelineUseCase";
-import {Timeline} from "../Timeline";
-import {EditMessageCommand} from "../EditMessageCommand";
-import {EditMessageUserCase} from "../EditMessageUserCase";
-import {UserProvider} from "../UserProvider";
-import {User} from "../User";
+import {LocalMessageRepository} from "../infrastructure/LocalMessageRepository";
+import {LocalDateProvider} from "../infrastructure/LocalDateProvider";
+import {PostMessageUseCase} from "../application/PostMessageUseCase";
+import {PostMessageCommand} from "../application/PostMessageCommand";
+import {Message} from "../domain/Message";
+import {ViewTimelineUseCase} from "../application/ViewTimelineUseCase";
+import {Timeline} from "../domain/Timeline";
+import {EditMessageCommand} from "../application/EditMessageCommand";
+import {EditMessageUserCase} from "../application/EditMessageUserCase";
+import {UserProvider} from "../../user/domain/UserProvider";
+import {StaticUserProvider} from "../../user/infrastructure/StaticUserProvider";
 
 export type MessageFixture = ReturnType<typeof createMessageFixture>
 export function createMessageFixture() {
     const messageRepository = new LocalMessageRepository()
     const dateProvider = new LocalDateProvider()
-    let givenUser: User
-    const userProvider: UserProvider = {
-        getUser: () => {
-            return givenUser
-        },
-        setUser: (user: User) => {
-            givenUser = user
-        }
-    }
+    const userProvider: UserProvider = new StaticUserProvider()
     let timeline: Timeline
     let thrownError: Error
 
@@ -33,8 +25,8 @@ export function createMessageFixture() {
                 await messageRepository.save(message)
             }
         },
-        givenUserIs: (user: User) => {
-            userProvider.setUser(user)
+        givenUserIs: (userId: string) => {
+            userProvider.setUser({id: userId})
         },
         givenNowIs: (date: Date) => {
             dateProvider.setDate(date)
@@ -50,7 +42,8 @@ export function createMessageFixture() {
         whenUserPostsMessage: async (postMessageCommand: PostMessageCommand) => {
             const postMessageUseCase = new PostMessageUseCase(
                 messageRepository,
-                dateProvider
+                dateProvider,
+                userProvider
             )
             try {
                 await postMessageUseCase.handle(postMessageCommand)

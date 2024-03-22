@@ -1,5 +1,5 @@
-import {MessageRepository} from "./MessageRepository";
-import {Message} from "./Message";
+import {MessageRepository} from "../domain/MessageRepository";
+import {Message} from "../domain/Message";
 
 export class LocalMessageRepository implements MessageRepository {
     public messages: Message[] = []
