@@ -1,14 +1,27 @@
 import {MessageRepository} from "../domain/MessageRepository";
 import {Message} from "../domain/Message";
 import * as fs from "fs";
+import {MessageText} from "../domain/MessageText";
 
 export class FileSystemMessageRepository implements MessageRepository {
-    path = 'tmp/messaging.json'
 
-    constructor(){
+    constructor(protected path: string = 'tmp/messaging.json'){
+        this.setPath(path)
+    }
+
+    getPath(){
+        return this.path
+    }
+
+    setPath(path: string){
+        this.path = path
         if (!this.fileExists()){
             this.writeMessages([])
         }
+    }
+
+    deletePath(){
+        fs.unlinkSync(this.path)
     }
 
     async update(message: Pick<Message, "messageId"> & Partial<Message>): Promise<void> {
@@ -56,10 +69,24 @@ export class FileSystemMessageRepository implements MessageRepository {
     private readMessages(): Message[] {
         const stringifiedJson = fs.readFileSync(this.path, 'utf-8')
 
-        return stringifiedJson ? JSON.parse(stringifiedJson) : []
+        return stringifiedJson ? JSON.parse(stringifiedJson).map(m => {
+            return {
+                messageId: m.messageId,
+                userId: m.userId,
+                text: MessageText.of(m.text),
+                date: new Date(m.date)
+            }
+        }) : []
     }
 
     private writeMessages(messages: Message[]): void {
-        fs.writeFileSync(this.path, JSON.stringify(messages))
+        fs.writeFileSync(this.path, JSON.stringify(messages.map(m => {
+            return {
+                messageId: m.messageId,
+                userId: m.userId,
+                text: m.text.value,
+                date: m.date.toString()
+            }
+        })))
     }
 }
