@@ -1,12 +1,12 @@
 import {LocalMessageRepository} from "../infrastructure/LocalMessageRepository";
 import {LocalDateProvider} from "../infrastructure/LocalDateProvider";
-import {PostMessageUseCase} from "../application/PostMessageUseCase";
-import {PostMessageCommand} from "../application/PostMessageCommand";
+import {PostMessageUseCase} from "../application/use-cases/PostMessageUseCase";
+import {PostMessageCommand} from "../application/use-cases/PostMessageCommand";
 import {Message} from "../domain/Message";
-import {ViewTimelineUseCase} from "../application/ViewTimelineUseCase";
-import {Timeline} from "../domain/Timeline";
-import {EditMessageCommand} from "../application/EditMessageCommand";
-import {EditMessageUserCase} from "../application/EditMessageUserCase";
+import {ViewTimelineUseCase} from "../application/use-cases/ViewTimelineUseCase";
+import {Timeline, TimelineElement} from "../domain/Timeline";
+import {EditMessageCommand} from "../application/use-cases/EditMessageCommand";
+import {EditMessageUserCase} from "../application/use-cases/EditMessageUserCase";
 import {UserProvider} from "../../user/domain/UserProvider";
 import {StaticUserProvider} from "../../user/infrastructure/StaticUserProvider";
 
@@ -26,7 +26,7 @@ export function createMessageFixture() {
             }
         },
         givenUserIs: (userId: string) => {
-            userProvider.setUser({id: userId})
+            userProvider.setUser({id: userId, followees: []})
         },
         givenNowIs: (date: Date) => {
             dateProvider.setDate(date)
@@ -71,9 +71,9 @@ export function createMessageFixture() {
         thenErrorShouldBeThrown: (classError: new () => Error)=> {
             expect(thrownError).toBeInstanceOf(classError)
         },
-        thenUserShouldSeeTimeline: (expectedTimeline: Timeline) => {
-            expectedTimeline.forEach((timelineElement, index) => {
-                expect(timelineElement).toEqual(timeline[index])
+        thenUserShouldSeeTimeline: (expectedTimelineElements: TimelineElement[]) => {
+            expectedTimelineElements.forEach((timelineElement, index) => {
+                expect(timelineElement).toEqual(timeline.elements[index])
             })
         }
     }

@@ -1,8 +1,8 @@
-import {Message} from "../domain/Message";
+import {Message} from "../../domain/Message";
 import {PostMessageCommand} from "./PostMessageCommand";
-import {MessageRepository} from "../domain/MessageRepository";
-import {DateProvider} from "../domain/DateProvider";
-import {UserProvider} from "../../user/domain/UserProvider";
+import {MessageRepository} from "../../domain/MessageRepository";
+import {DateProvider} from "../../domain/DateProvider";
+import {UserProvider} from "../../../user/domain/UserProvider";
 
 export class PostMessageUseCase {
     constructor(

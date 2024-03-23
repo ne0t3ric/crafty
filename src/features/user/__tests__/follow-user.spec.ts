@@ -1,14 +1,13 @@
-import {UserRepository} from "../domain/UserRepository";
-import {FollowUserCommand} from "../application/FollowUserCommand";
-import {FollowUserUseCase} from "../application/FollowUserUseCase";
-import {LocalUserRepository} from "../infrastructure/LocalUserRepository";
+import {createUserFixture, UserFixture} from "./user.fixture";
+
+let fixture: UserFixture;
+
+beforeEach(() => {
+    fixture = createUserFixture()
+})
 
 describe("Feature: Following a user", () => {
-    let fixture: Fixture;
 
-    beforeEach(() => {
-        fixture = createFixture();
-    });
     test("Alice can follow Bob", async () => {
         await fixture.givenUserFollowees({
             user: "Alice",
@@ -27,34 +26,3 @@ describe("Feature: Following a user", () => {
     });
 });
 
-const createFixture = () => {
-    const userRepository: UserRepository = new LocalUserRepository()
-    return {
-        async givenUserFollowees({
-           user,
-           followees,
-        }: {
-            user: string
-            followees: string[]
-        }) {
-            await userRepository.save({id: user, followees: followees})
-        },
-        async whenUserFollows(followCommand: FollowUserCommand) {
-            const followUserUseCase = new FollowUserUseCase(
-                userRepository
-            )
-            followUserUseCase.handle(followCommand)
-        },
-        async thenUserFolloweesAre(expectedUserFollowees: {
-            user: string;
-            followees: string[];
-        }) {
-            const user = await userRepository.getById(expectedUserFollowees.user)
-            const followeesOfUser = user.followees
-
-            expect(followeesOfUser).toEqual(expect.arrayContaining(expectedUserFollowees.followees))
-        },
-    };
-};
-
-type Fixture = ReturnType<typeof createFixture>;

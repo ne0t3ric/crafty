@@ -1,9 +1,9 @@
 import {EditMessageCommand} from "./EditMessageCommand";
-import {DateProvider} from "../domain/DateProvider";
-import {MessageRepository} from "../domain/MessageRepository";
-import {UserProvider} from "../../user/domain/UserProvider";
-import {AuthorizationError} from "../../user/domain/AuthorizationError";
-import {Message} from "../domain/Message";
+import {DateProvider} from "../../domain/DateProvider";
+import {MessageRepository} from "../../domain/MessageRepository";
+import {UserProvider} from "../../../user/domain/UserProvider";
+import {AuthorizationError} from "../../../user/domain/AuthorizationError";
+import {Message} from "../../domain/Message";
 
 export class EditMessageUserCase {
     constructor(

@@ -1,12 +1,12 @@
 #!/usr/bin/env node
 
 import { Command } from 'commander';
-import {PostMessageCommand} from "./src/features/messaging/application/PostMessageCommand";
-import {PostMessageUseCase} from "./src/features/messaging/application/PostMessageUseCase";
+import {PostMessageCommand} from "./src/features/messaging/application/use-cases/PostMessageCommand";
+import {PostMessageUseCase} from "./src/features/messaging/application/use-cases/PostMessageUseCase";
 import {LocalDateProvider} from "./src/features/messaging/infrastructure/LocalDateProvider";
 import {FileSystemMessageRepository} from "./src/features/messaging/infrastructure/FileSystemMessageRepository";
-import {ViewTimelineUseCase} from "./src/features/messaging/application/ViewTimelineUseCase";
-import {EditMessageUserCase} from "./src/features/messaging/application/EditMessageUserCase";
+import {ViewTimelineUseCase} from "./src/features/messaging/application/use-cases/ViewTimelineUseCase";
+import {EditMessageUserCase} from "./src/features/messaging/application/use-cases/EditMessageUserCase";
 import {UserProvider} from "./src/features/user/domain/UserProvider";
 import {StaticUserProvider} from "./src/features/user/infrastructure/StaticUserProvider";
 
