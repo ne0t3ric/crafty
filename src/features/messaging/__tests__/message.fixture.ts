@@ -1,5 +1,3 @@
-import {LocalMessageRepository} from "../infrastructure/LocalMessageRepository";
-import {LocalDateProvider} from "../infrastructure/LocalDateProvider";
 import {PostMessageUseCase} from "../application/use-cases/PostMessageUseCase";
 import {PostMessageCommand} from "../application/use-cases/PostMessageCommand";
 import {Message} from "../domain/Message";
@@ -9,19 +7,22 @@ import {EditMessageCommand} from "../application/use-cases/EditMessageCommand";
 import {EditMessageUserCase} from "../application/use-cases/EditMessageUserCase";
 import {UserProvider} from "../../user/domain/UserProvider";
 import {StaticUserProvider} from "../../user/infrastructure/StaticUserProvider";
+import {MessageRepository} from "../domain/MessageRepository";
+import {DateProvider} from "../domain/DateProvider";
 
 export type MessageFixture = ReturnType<typeof createMessageFixture>
-export function createMessageFixture() {
-    const messageRepository = new LocalMessageRepository()
-    const dateProvider = new LocalDateProvider()
+
+export function createMessageFixture(
+    messageRepository: MessageRepository,
+    dateProvider: DateProvider
+) {
     const userProvider: UserProvider = new StaticUserProvider()
     let timeline: Timeline
     let thrownError: Error
 
-
     return {
         givenMessages: async (messages: Message[]) => {
-            for (const message of messages){
+            for (const message of messages) {
                 await messageRepository.save(message)
             }
         },
@@ -47,12 +48,12 @@ export function createMessageFixture() {
             )
             try {
                 await postMessageUseCase.handle(postMessageCommand)
-            } catch(error) {
+            } catch (error) {
                 thrownError = error
             }
         },
-        whenUserEditMessage: async(editMessageCommand: EditMessageCommand) => {
-             const editMessageUserCase = new EditMessageUserCase(
+        whenUserEditMessage: async (editMessageCommand: EditMessageCommand) => {
+            const editMessageUserCase = new EditMessageUserCase(
                 messageRepository,
                 dateProvider,
                 userProvider
@@ -60,15 +61,15 @@ export function createMessageFixture() {
 
             try {
                 await editMessageUserCase.handle(editMessageCommand)
-            } catch(error) {
+            } catch (error) {
                 thrownError = error
             }
         },
-        thenMessageShouldBe: async  (expectedMessage: Message) => {
+        thenMessageShouldBe: async (expectedMessage: Message) => {
             const message = await messageRepository.get(expectedMessage.messageId)
             expect(expectedMessage).toEqual(message)
         },
-        thenErrorShouldBeThrown: (classError: new () => Error)=> {
+        thenErrorShouldBeThrown: (classError: new () => Error) => {
             expect(thrownError).toBeInstanceOf(classError)
         },
         thenUserShouldSeeTimeline: (expectedTimelineElements: TimelineElement[]) => {

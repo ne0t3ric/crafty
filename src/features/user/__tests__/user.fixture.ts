@@ -1,11 +1,17 @@
 import {UserRepository} from "../domain/UserRepository";
-import {LocalUserRepository} from "../infrastructure/LocalUserRepository";
 import {FollowUserCommand} from "../application/FollowUserCommand";
 import {FollowUserUseCase} from "../application/FollowUserUseCase";
 
-export const createUserFixture = () => {
-    const userRepository: UserRepository = new LocalUserRepository()
+export const createUserFixture = (userRepository: UserRepository) => {
     return {
+        async givenUsers(users: string[]) {
+            for (const user of users) {
+                await userRepository.save({
+                    id: user,
+                    followees: []
+                })
+            }
+        },
         async givenUserFollowees({
                                      user,
                                      followees,

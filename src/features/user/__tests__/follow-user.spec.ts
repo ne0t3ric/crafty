@@ -1,9 +1,10 @@
 import {createUserFixture, UserFixture} from "./user.fixture";
+import {LocalUserRepository} from "../infrastructure/LocalUserRepository";
 
 let fixture: UserFixture;
 
 beforeEach(() => {
-    fixture = createUserFixture()
+    fixture = createUserFixture(new LocalUserRepository())
 })
 
 describe("Feature: Following a user", () => {

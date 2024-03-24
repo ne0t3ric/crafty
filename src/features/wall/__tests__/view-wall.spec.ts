@@ -7,20 +7,25 @@ import {UserRepository} from "../../user/domain/UserRepository";
 import {DateProvider} from "../../messaging/domain/DateProvider";
 import {LocalMessageRepository} from "../../messaging/infrastructure/LocalMessageRepository";
 import {LocalUserRepository} from "../../user/infrastructure/LocalUserRepository";
+import {LocalDateProvider} from "../../messaging/infrastructure/LocalDateProvider";
 
 let fixture: ReturnType<typeof createFixture>
 let messageFixture: MessageFixture
 let userFixture: UserFixture
 beforeEach(() => {
-    fixture = createFixture()
-    messageFixture = createMessageFixture()
-    userFixture = createUserFixture()
+    const messageRepository = new LocalMessageRepository()
+    const userRepository = new LocalUserRepository()
+    const dateProvider = new LocalDateProvider()
+
+    fixture = createFixture(messageRepository, userRepository, dateProvider)
+    messageFixture = createMessageFixture(messageRepository, dateProvider)
+    userFixture = createUserFixture(userRepository)
 })
 describe('Feature: View wall', () => {
     describe('Rule: Alice can view her wall', () => {
-        test('Alice can view messages on her wall by reverse chronological order', async() => {
-            await fixture.givenUsers(['Alice', 'Bob', 'Charlie'])
-            await fixture.givenMessages([
+        test('Alice can view messages on her wall by reverse chronological order', async () => {
+            await userFixture.givenUsers(['Alice', 'Bob', 'Charlie'])
+            await messageFixture.givenMessages([
                 Message.from({
                     messageId: 'message1',
                     userId: 'Alice',
@@ -40,10 +45,11 @@ describe('Feature: View wall', () => {
                     date: '2024-03-20T08:00:00Z'
                 })
             ])
-            await fixture.givenUserFollowees({
+            await userFixture.givenUserFollowees({
                 user: 'Alice',
                 followees: ['Charlie']
             })
+            messageFixture.givenNowIs(new Date('2024-03-20T10:00:00Z'))
 
             await fixture.whenViewWall({
                 user: 'Alice'
@@ -53,7 +59,7 @@ describe('Feature: View wall', () => {
                 {
                     userId: 'Alice',
                     text: 'I love the weather today',
-                    publicationTime: 'hours ago'
+                    publicationTime: 'less than a minute ago'
                 },
                 {
                     userId: 'Charlie',
@@ -87,13 +93,12 @@ class ViewWallUseCase {
     }
 }
 
-function createFixture(){
+function createFixture(
+    messageRepository: MessageRepository,
+    userRepository: UserRepository,
+    dateProvider: DateProvider
+) {
     let timeline: Timeline
-    const messageRepository = new LocalMessageRepository()
-    const userRepository = new LocalUserRepository()
-    const dateProvider = {
-        getDate: () => new Date()
-    }
 
     const viewWallUseCase = new ViewWallUseCase(
         messageRepository,
@@ -101,30 +106,16 @@ function createFixture(){
         dateProvider
     )
     return {
-        givenUserFollowees: async({user, followees}: {user: string, followees: string[]}) => {
-            const currentUser = await userRepository.getById(user)
-            await userRepository.save({
-                ...currentUser,
-                followees
-            })
-        },
-        givenUsers: async(users: string[]) => {
-          for (const user of users) {
-              await userRepository.save({
-                  id: user,
-                  followees: []
-              })
-          }
-        },
+
         givenMessages: async (messages: Message[]) => {
-            for (const message of messages){
+            for (const message of messages) {
                 await messageRepository.save(message)
             }
         },
-        whenViewWall: async({user}: {user: string}) => {
+        whenViewWall: async ({user}: { user: string }) => {
             timeline = await viewWallUseCase.handle(user)
         },
-        thenWallShouldDisplayTimeline: async(expectedTimelineElements: TimelineElement[]) => {
+        thenWallShouldDisplayTimeline: async (expectedTimelineElements: TimelineElement[]) => {
             expectedTimelineElements.forEach((timelineElement, index) => {
                 expect(timelineElement).toEqual(timeline.elements[index])
             })

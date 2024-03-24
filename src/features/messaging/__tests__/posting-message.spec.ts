@@ -2,11 +2,16 @@ import {createMessageFixture, MessageFixture} from "./message.fixture";
 import {MessageTooLongError} from "../domain/MessageTooLongError";
 import {EmptyMessageError} from "../domain/EmptyMessageError";
 import {Message} from "../domain/Message";
+import {LocalMessageRepository} from "../infrastructure/LocalMessageRepository";
+import {LocalDateProvider} from "../infrastructure/LocalDateProvider";
 
 let fixture: MessageFixture
 
 beforeEach(() => {
-    fixture = createMessageFixture()
+    fixture = createMessageFixture(
+        new LocalMessageRepository(),
+        new LocalDateProvider()
+    )
 })
 describe('Feature: Posting a message', () => {
     describe('Rule: a message can contains maximum 280 characters', () => {

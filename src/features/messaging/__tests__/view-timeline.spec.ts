@@ -1,10 +1,15 @@
 import {createMessageFixture, MessageFixture} from "./message.fixture";
 import {Message} from "../domain/Message";
+import {LocalMessageRepository} from "../infrastructure/LocalMessageRepository";
+import {LocalDateProvider} from "../infrastructure/LocalDateProvider";
 
 let fixture: MessageFixture
 
 beforeEach(() => {
-    fixture = createMessageFixture()
+    fixture = createMessageFixture(
+        new LocalMessageRepository(),
+        new LocalDateProvider()
+    )
 })
 
 describe('Feature: Viewing a personal timeline', () => {
@@ -12,10 +17,10 @@ describe('Feature: Viewing a personal timeline', () => {
         test('Alice can view her two messaging on her timeline', async () => {
             await fixture.givenMessages([
                 Message.from({
-                // from Alice
+                    // from Alice
                     messageId: 'message-1',
                     userId: 'Alice',
-                    text:'Hello World',
+                    text: 'Hello World',
                     date: '2024-03-20T10:00:00Z'
                 }),
                 // from Bob

@@ -3,10 +3,11 @@ import {MessageTooLongError} from "../domain/MessageTooLongError";
 import {EmptyMessageError} from "../domain/EmptyMessageError";
 import {AuthorizationError} from "../../user/domain/AuthorizationError";
 import {Message} from "../domain/Message";
+import {LocalMessageRepository} from "../infrastructure/LocalMessageRepository";
 
 let fixture: MessageFixture
 beforeEach(() => {
-    fixture = createMessageFixture()
+    fixture = createMessageFixture(new LocalMessageRepository())
 })
 describe('Feature: Editing a message', () => {
     describe('Rule: a edited message can contains maximum 280 characters', () => {
@@ -36,8 +37,8 @@ describe('Feature: Editing a message', () => {
             await fixture.givenMessages([Message.from({
                 messageId: 'message-1',
                 userId: 'Alice',
-                text:'Hello World',
-                date:'2024-03-20T10:00:00Z'
+                text: 'Hello World',
+                date: '2024-03-20T10:00:00Z'
             })])
             fixture.givenUserIs('Alice')
             fixture.givenNowIs(new Date('2024-03-20T10:00:00Z'))
