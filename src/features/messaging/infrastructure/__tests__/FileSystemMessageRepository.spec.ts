@@ -1,11 +1,10 @@
 import {FileSystemMessageRepository} from "../FileSystemMessageRepository";
 import * as fs from "fs";
 import {Message} from "../../domain/Message";
-import {MessageText} from "../../domain/MessageText";
 
 let fixture: ReturnType<typeof createFixture>
 beforeEach(() => {
-  fixture = createFixture()
+    fixture = createFixture()
 })
 describe('FileSystemMessageRepository', () => {
     describe('Handling file', () => {
@@ -29,23 +28,23 @@ describe('FileSystemMessageRepository', () => {
     describe('Saving one message', () => {
         test('Should save a message', async () => {
             fixture.givenFileSystemPath('tmp/messages.json')
-            await fixture.whenRepositorySaveMessage({
+            await fixture.whenRepositorySaveMessage(Message.from({
                 messageId: 'message-1',
                 userId: 'Alice',
-                text: MessageText.of('Hello World'),
-                date: new Date('2024-03-20T10:00:00Z')
-            })
-            await fixture.thenRepositoryShouldHaveMessage({
+                text: 'Hello World',
+                date: '2024-03-20T10:00:00Z'
+            }))
+            await fixture.thenRepositoryShouldHaveMessage(Message.from({
                 messageId: 'message-1',
                 userId: 'Alice',
-                text: MessageText.of('Hello World'),
-                date: new Date('2024-03-20T10:00:00Z')
-            })
+                text: 'Hello World',
+                date: '2024-03-20T10:00:00Z'
+            }))
         })
     })
 })
 
-function createFixture(){
+function createFixture() {
     let givenPath: string
     let fsRepository: FileSystemMessageRepository
     return {
@@ -53,7 +52,7 @@ function createFixture(){
             givenPath = path
         },
         givenFileDoesntExists: () => {
-          fs.unlinkSync(givenPath)
+            fs.unlinkSync(givenPath)
         },
         whenRepositoryIsCreated: () => {
             fsRepository = new FileSystemMessageRepository(givenPath)
@@ -62,9 +61,9 @@ function createFixture(){
             fsRepository = fsRepository || new FileSystemMessageRepository(givenPath)
             await fsRepository.save(message)
         },
-        thenRepositoryShouldHaveMessage: async(message: Message) => {
-          const messageInRepo = await fsRepository.get(message.messageId)
-          expect(messageInRepo).toEqual(message)
+        thenRepositoryShouldHaveMessage: async (message: Message) => {
+            const messageInRepo = await fsRepository.get(message.messageId)
+            expect(messageInRepo.data()).toEqual(message.data())
         },
         thenFileShouldBeCreated: () => {
             const filePath = fsRepository.getPath()

@@ -8,6 +8,7 @@ import {DateProvider} from "../../messaging/domain/DateProvider";
 import {LocalMessageRepository} from "../../messaging/infrastructure/LocalMessageRepository";
 import {LocalUserRepository} from "../../user/infrastructure/LocalUserRepository";
 import {LocalDateProvider} from "../../messaging/infrastructure/LocalDateProvider";
+import {ViewWallUseCase} from "../application/use-cases/ViewWallUseCase";
 
 let fixture: ReturnType<typeof createFixture>
 let messageFixture: MessageFixture
@@ -70,28 +71,6 @@ describe('Feature: View wall', () => {
         })
     })
 })
-
-class ViewWallUseCase {
-    constructor(
-        private messageRepository: MessageRepository,
-        private userRepository: UserRepository,
-        private dateProvider: DateProvider) {
-    }
-
-    async handle(userId: string): Promise<Timeline> {
-        const user = await this.userRepository.getById(userId)
-        const followees = user.followees
-        let messages: Message[] = await this.messageRepository.getByUser(userId)
-        for (const followee of followees) {
-            const followeeMessages = await this.messageRepository.getByUser(followee)
-            messages.push(...followeeMessages)
-        }
-
-        const timeline = new Timeline(this.dateProvider, messages)
-
-        return timeline
-    }
-}
 
 function createFixture(
     messageRepository: MessageRepository,

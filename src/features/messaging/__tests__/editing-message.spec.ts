@@ -4,10 +4,11 @@ import {EmptyMessageError} from "../domain/EmptyMessageError";
 import {AuthorizationError} from "../../user/domain/AuthorizationError";
 import {Message} from "../domain/Message";
 import {LocalMessageRepository} from "../infrastructure/LocalMessageRepository";
+import {LocalDateProvider} from "../infrastructure/LocalDateProvider";
 
 let fixture: MessageFixture
 beforeEach(() => {
-    fixture = createMessageFixture(new LocalMessageRepository())
+    fixture = createMessageFixture(new LocalMessageRepository(), new LocalDateProvider())
 })
 describe('Feature: Editing a message', () => {
     describe('Rule: a edited message can contains maximum 280 characters', () => {

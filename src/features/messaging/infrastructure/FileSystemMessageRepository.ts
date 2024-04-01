@@ -1,26 +1,25 @@
 import {MessageRepository} from "../domain/MessageRepository";
 import {Message} from "../domain/Message";
 import * as fs from "fs";
-import {MessageText} from "../domain/MessageText";
 
 export class FileSystemMessageRepository implements MessageRepository {
 
-    constructor(protected path: string = 'tmp/messaging.json'){
+    constructor(protected path: string = 'tmp/messaging.json') {
         this.setPath(path)
     }
 
-    getPath(){
+    getPath() {
         return this.path
     }
 
-    setPath(path: string){
+    setPath(path: string) {
         this.path = path
-        if (!this.fileExists()){
+        if (!this.fileExists()) {
             this.writeMessages([])
         }
     }
 
-    deletePath(){
+    deletePath() {
         fs.unlinkSync(this.path)
     }
 
@@ -38,10 +37,6 @@ export class FileSystemMessageRepository implements MessageRepository {
         messageInRepo.text = message.text
 
         this.writeMessages(messages)
-    }
-
-    private fileExists(): boolean {
-        return fs.existsSync(this.path)
     }
 
     async getByUser(userId: string): Promise<Message[]> {
@@ -65,16 +60,20 @@ export class FileSystemMessageRepository implements MessageRepository {
         return foundMessage
     }
 
+    private fileExists(): boolean {
+        return fs.existsSync(this.path)
+    }
+
     private readMessages(): Message[] {
         const stringifiedJson = fs.readFileSync(this.path, 'utf-8')
 
         return stringifiedJson ? JSON.parse(stringifiedJson).map(m => {
-            return {
+            return Message.from({
                 messageId: m.messageId,
                 userId: m.userId,
-                text: MessageText.of(m.text),
-                date: new Date(m.date)
-            }
+                text: m.text,
+                date: m.date
+            })
         }) : []
     }
 
